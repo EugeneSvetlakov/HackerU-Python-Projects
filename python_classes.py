@@ -52,9 +52,7 @@ kia = Car('Kia Sportage', '2200', 'электричество')
 
 # Теперь можно воспользоваться его внешним интерфейсом: методом show()
 print(terrano1)
-print(terrano1.show())
 print(kia)
-print(kia.show())
 dict1 = kia.get_param_list()
 print(dict1)
 
