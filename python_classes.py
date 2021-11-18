@@ -61,6 +61,7 @@ print(
     f' {Car.get_param_list.__annotations__}')
 
 # Результат:
-# Воробей носит одежду размера S.
-# Попугай ара носит одежду размера XL и разговаривает.
-# Попугай Корелла носит одежду размера S и щебечет.
+# 'type: Nissan Terrano1, weigth: 1800, fuel_type: бензин'
+# 'type: Kia Sportage, weigth: 2200, fuel_type: электричество'
+# '{'type': 'Kia Sportage', 'weight': '2200', 'fuel_type': 'электричество'}'
+# 'annotation for func get_param_list: {'return': 'dict'}'
