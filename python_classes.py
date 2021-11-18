@@ -1,5 +1,4 @@
 from __future__ import annotations
-# from typing import Dict
 
 
 class Machine:
@@ -65,3 +64,5 @@ print(
 # 'type: Kia Sportage, weigth: 2200, fuel_type: электричество'
 # '{'type': 'Kia Sportage', 'weight': '2200', 'fuel_type': 'электричество'}'
 # 'annotation for func get_param_list: {'return': 'dict'}'
+
+print("sd", "sdaa")
