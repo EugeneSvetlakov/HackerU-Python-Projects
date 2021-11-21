@@ -5,6 +5,7 @@
 - GitLens
 - Material Icon Theme
 - Python
+- Pylance
 - Visual Studio IntelliCode
 
 ## Linter
