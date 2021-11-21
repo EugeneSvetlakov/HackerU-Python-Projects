@@ -29,9 +29,7 @@ list_of_nums = [1, 1, 1, 3, 3, 3, 33, 42, -4,
                 33, 908, 11, 2, -4, -5, 0, 2, 1, 3, 42]
 list_unic_nums = []
 for i in list_of_nums:
-    if i not in list_unic_nums and i > 0:
-        list_unic_nums.append(i)
-    elif i <= 0:
+    if (i not in list_unic_nums and i > 0) or (i <= 0):
         list_unic_nums.append(i)
 print("Исходный список чисел:")
 print(list_of_nums)
