@@ -22,5 +22,6 @@ Python: Select Linter -> flake8
 ### clone repo
 git clone https://github.com/EugeneSvetlakov/HackerU-Python-Projects.git
 ### config to push
-git config  user.name "EugeneSvetlakov"
+git config user.name "EugeneSvetlakov"
 git config user.email eugene.svetlakov@gmail.com
+> now try to push, and on ask to login - go auth process
