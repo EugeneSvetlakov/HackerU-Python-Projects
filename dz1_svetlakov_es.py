@@ -29,8 +29,9 @@ index_of_dot = file_name_full.rfind(".")
 file_name_without_ext = file_name_full if index_of_dot < 0 else file_name_full[
     :index_of_dot]
 new_file_name = file_name_without_ext + "." + new_file_ext
-new_file_with_len_name = file_name_without_ext + "_" + \
-    str(len(file_name_without_ext)) + "." + new_file_ext
+new_file_with_len_name = (file_name_without_ext + "_" +
+                          str(len(file_name_without_ext)) +
+                          "." + new_file_ext)
 print(f"Новое имя файла: {new_file_name}")
 print_value = "Имя файла с добавлением длины имени (без учета расширения):"
 print(

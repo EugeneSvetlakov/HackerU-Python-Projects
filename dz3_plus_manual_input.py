@@ -4,8 +4,8 @@ import re
 # * Сделайте ввод пользователей и их данных с клавиатуры
 regexp_str = r'^[a-zA-Zа-яА-Я]\w*'
 question_str = 'Введите имя пользователя: '
-error_message = 'Ошибка! В имени первый символ обязательно буква.' \
-    ' Допустимо исрользоавать цифры.'
+error_message = ('Ошибка! В имени первый символ обязательно буква.'
+                 ' Допустимо исрользоавать цифры.')
 bool_question = True
 while bool_question:
     recieved_str = input(question_str)
@@ -35,8 +35,8 @@ print(f"user_ip: {user_ip}")
 
 regexp_str = r'[a-zA-Z]\w*'
 question_str = f'Введите login для пользователя с именем "{user_name}": '
-error_message = 'Ошибка! login должен состоять минимум из одной ' \
-    'английской буквы. Допустимо вводить цифры и "_".'
+error_message = ('Ошибка! login должен состоять минимум из одной '
+                 'английской буквы. Допустимо вводить цифры и "_".')
 bool_question = True
 while bool_question:
     recieved_str = input(question_str)

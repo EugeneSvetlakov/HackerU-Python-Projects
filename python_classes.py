@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Optional
 
 # Data Classes (need 'from dataclasses import dataclass')
 
@@ -9,7 +9,7 @@ from typing import Any, Optional
 class Point:
     x: int
     y: int
-    z: Any
+    z: any
 
 
 @dataclass
@@ -45,7 +45,7 @@ class Machine:
         # Это конструктор, он вызывается при создании объекта
         self.type = type
         self.weigth = weigth
-        super(Machine, self).__init__(**kw)
+        # super(Machine, self).__init__(**kw)
 
     def __str__(self) -> str:
         return f'type: {self.type}, weigth: {self.weigth}'
@@ -56,9 +56,9 @@ class Machine:
 
 
 class Fuel:
-    def __init__(self, fuel_type: str, **kw):
+    def __init__(self, fuel_type: str, **kw) -> Fuel:
         self.fuel_type = fuel_type
-        super(Fuel, self).__init__(**kw)
+        # super(Fuel, self).__init__(**kw)
 
     def __str__(self) -> str:
         return f'fuel_type: {self.fuel_type}'

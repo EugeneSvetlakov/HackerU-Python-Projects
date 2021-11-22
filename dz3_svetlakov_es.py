@@ -1,7 +1,5 @@
-from _typeshed import Self
 import json
 import timeit
-import re
 # ДЗ №3 Светлаков Евгений Сергеевич
 # Даны три списка: список имен пользователей, список их ip, список логинов.
 #
