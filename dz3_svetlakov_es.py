@@ -32,6 +32,10 @@ for n, i, l in zip(name_list, ip_list, login_list):
     dict_1 = {k: v for k, v in zip(key_list, [n, i, l])}
     my_list.append(dict_1)
     print(dict_1)
+# Более короткий вариант
+# keys = ["name", "ip", "login"]
+# zipped_values = zip(name_list, ip_list, login_list)
+# list_dicts = [dict(zip(keys, values)) for values in zipped_data]
 print("My_set:")
 print(my_list)
 stop = timeit.timeit()
