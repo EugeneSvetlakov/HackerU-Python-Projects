@@ -1,0 +1,3 @@
+text of file 3 string 1
+text of file 3 string 2 +5
+text of file 3 string 3
