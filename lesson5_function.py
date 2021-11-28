@@ -1,3 +1,6 @@
+from functools import reduce
+
+
 # region Функции
 def foo(x) -> str:
     print("func foo is started...")
@@ -169,7 +172,7 @@ else:
 res = 2 + 10 * (lambda x, y, z: x + y + z)(1, 2, 3)
 # endregion
 
-# region Функции высшего порядка: map, filter
+# region Функции высшего порядка: map, filter, zip, reduce
 sp = "32423565646546343546566787895"
 sp = list(sp)
 list(map(lambda x: int(x), sp))
@@ -192,4 +195,24 @@ print("second print list(res):", list(res))
 
 res2 = list(filter(lambda x: x < 80, map(int, s.split())))
 res3 = list(filter(lambda x: x < 80, s2))
+
+s1 = ["key1", "key2", "key3", "key4"]
+s2 = [21, 2, 43, 14]
+s3 = [4, 5, 63, 414]
+s4 = [4, 5, 63, 414, 3, 2]
+z = zip(s1, s2, s3)
+zdict = zip(s1, s2)
+print("use zip()= ", z)
+
+# For example, reduce(lambda x, y: x+y, [1, 2, 3, 4, 5])
+# calculates ((((1+2)+3)+4)+5).
+# If initial is present, it is placed before the items of the sequence
+# in the calculation, and serves as a default when the sequence is empty.
+redu = reduce(lambda r, x: str(r) + " | " + str(x), s4)
+print("user reduce()= ", redu)
+print(reduce(lambda r, x: r * x, sp))
+print(reduce(lambda r, x: r * x, sp, 0))
+print(reduce(lambda r, x: r * x, sp, -1))
+print(reduce(lambda r, x: r + x * x, sp))
+
 # endregion
