@@ -1,3 +1,4 @@
+import os
 import bs4
 from bs4.element import ResultSet
 import requests
@@ -17,28 +18,41 @@ import requests
 
 # page = requests.get("https://yandex.ru")
 # soup = bs4.BeautifulSoup(page.content.decode(), 'html.parser')
-# spans: ResultSet = soup.find_all('span', attrs={"class": "news__item-content"})
+# spans: ResultSet = soup.find_all(
+#     'span', attrs={"class": "news__item-content"})
 # for i in spans:
 #     print(i.text)
 
 # product-card group
-page2 = requests.get("https://babybug.ru/brendy/melissa/")
-soup2 = bs4.BeautifulSoup(page2.content.decode(), 'html.parser')
-product_cards: ResultSet = soup2.find_all(
-    'div', attrs={"class": "product-card group"})
-for i in product_cards:
-    print(i.a["title"])
-    card_prices_div = i.find('div', attrs={"class": "product-card__prices"})
-    c1 = card_prices_div.contents
-    print(type(c1))
-    c11 = c1[1].text
-    c12 = c1[3].text
-    sd1 = list(map(lambda x: x.attrs if x != '\n' else '', c1))
-    sd2 = list(map(lambda x: x.text if x != '\n' else '', c1))
-    sd = list(filter(lambda f: len(f) > 0, map(lambda x: x.text if x != '\n' else '', c1)))
-    for el in c1:
-        t = el.text if el != '\n' else ''
-    print(
-        "type(card_prices_div): ", type(card_prices_div),
-        "card_prices_div=", card_prices_div)
-    print(type(i))
+if not os.path.exists("./DZ/images/"):
+    os.mkdir("./DZ/images/")
+base_url = "https://babybug.ru"
+page_link = "/brendy/melissa/"
+
+page2 = requests.get(f"{base_url}{page_link}")
+soup_card = bs4.BeautifulSoup(page2.content.decode(), 'html.parser')
+
+# TODO: Нужно дописать чтобы парсило каждую карточку и получало из нее
+# набор данных и складывало в список или словарь
+
+find_del_price = soup_card.find_all('del', attrs={'data-price': ''})
+
+# region Модель поиска Имени, Цены на одну карточку
+find_prod_title = soup_card.find(
+    'a', attrs={'class': 'product-card__title'})
+
+get_prod_name = find_prod_title.get_text().strip()
+get_prod_url = f"{base_url}{find_prod_title['href']}"
+
+find_prices = soup_card.find(
+    'div', attrs={'class': 'product-card__prices'}).children
+price_list = list(
+    map(
+        lambda p: p.get_text(), filter(
+            lambda x: type(x) is bs4.element.Tag, find_prices)))
+# endregion
+
+find_prod_pictures = soup_card.find_all(
+    'img', attrs={'class': 'product-card__img'})
+img_urls = list(map(lambda s: f"{base_url}{s['src']}", find_prod_pictures))
+print()
