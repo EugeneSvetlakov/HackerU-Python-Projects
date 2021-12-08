@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from multiprocessing import Pool
 import concurrent.futures
 import time
