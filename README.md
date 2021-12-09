@@ -13,7 +13,7 @@
 ```
 python3.8 -m pip install -U flake8
 python3.9 -m pip install -U flake8
-python3.8 -m pip install -U flake8-return flake8-simplify pep8-naming flake8-functions flake8-use-fstring flake8-length flake8-type-checking flake8-future-annotations flake8-broken-line
+python3.8 -m pip install -U flake8-return flake8-simplify pep8-naming flake8-functions flake8-use-fstring flake8-length flake8-type-checking flake8-future-annotations flake8-broken-line autopep8
 
 Ctrl+Shift+P
 Python: Select Linter

@@ -2,6 +2,7 @@ import os
 import os.path
 import lesson4_mymodele
 
+
 # Импорт части модуля
 # from lesson4_mymodele import func_1, func_2
 

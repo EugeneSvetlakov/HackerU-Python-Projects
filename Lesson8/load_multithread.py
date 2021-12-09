@@ -13,8 +13,11 @@ ENDC = '\033[0m'
 
 # A = 1000
 # lock = threading.Lock()
+
+
 def getlinks(search_text="машинки"):
-    page = urllib.request.urlopen(f"https://yandex.ru/images/search?text={urllib.parse.quote(search_text)}")
+    page = urllib.request.urlopen(
+        f"https://yandex.ru/images/search?text={urllib.parse.quote(search_text)}")
     # print(page.read())
     soup = bs4.BeautifulSoup(page.read(), "html.parser")
     res = []
@@ -53,8 +56,7 @@ if __name__ == '__main__':
         th = threading.Thread(target=load_link, args=(link,))
         threads.append(th)
 
-
     list(map(lambda th: th.start(), threads))
     list(map(lambda th: th.join(), threads))
     print(f"{GREEN}All done{ENDC}")
-    print(f"{time.time() - t}s.") # 12
+    print(f"{time.time() - t}s.")  # 12
