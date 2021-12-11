@@ -14,7 +14,7 @@ from selenium.webdriver.support.relative_locator import locate_with
 # Encrypt passwd
 key = 'vdEt5DDrwvuZB9tQVLGEoJPmGVVgmw3TtUbPkx0-KfY='
 f = Fernet(key)
-secret_text = "This is a secret text"
+secret_text = "StZiKk;rj4iH2Ljr"
 encrypted_text = f.encrypt(secret_text.encode())
 decrypted_text = f.decrypt(encrypted_text)
 
@@ -64,8 +64,9 @@ time.sleep(2)
 
 # Current date
 cur_date = date.today().strftime("%-d.%m.%y")
+xpath_date = f"//tr/td[contains(text(), {cur_date})]"
 tr_cur_lesson = driver.find_element(
-    By.XPATH, f"//tr/td[contains(text(), {cur_date})]")
+    By.XPATH, xpath_date)
 # tr_cur_lesson = driver.find_element(
 #     By.XPATH, "//td[contains(text(), '11.12.21')]")
 link_send_present = driver.find_element(locate_with(
