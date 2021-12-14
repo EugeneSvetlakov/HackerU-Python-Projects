@@ -40,3 +40,10 @@ def sandbox():
 
 
 sandbox()
+
+"""
+
+"""
+c = {}
+d= "'_''_'class'_''_'"
+getattr({}, '_''_'class'_''_')

