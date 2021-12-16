@@ -40,7 +40,7 @@ def work_ftp(host, user, password):
                 get_file = ftp.retrbinary(
                     'RETR' + ' ' + 'xdz.crash', file.write)
                 print(get_file)
-    except all_errors as e:
+    except all_errors:
         pass
 
 
@@ -48,6 +48,7 @@ os.chdir('./Lesson10')
 
 # bruting ftp password
 # psw= hacker9900
+# Elapsed time: ~13sec
 start = timeit.timeit()
 with open('psw.txt') as file:
     pswds = file.read().split("\n")
@@ -60,10 +61,10 @@ with concurrent.futures.ThreadPoolExecutor() as executor:
         if future.result() is not None:
             password_for_ftp = future.result()
             print(f"Password for ftp: {password_for_ftp}")
+            stop = timeit.timeit()
+            elapsed_time = stop - start
+            print(f"Elapsed time: {elapsed_time}")
             executor.shutdown(wait=False)
-stop = timeit.timeit()
-elapsed_time = stop - start
-print(f"Elapsed time: {elapsed_time}")
 
 # get file from ftp
 # work_ftp("45.143.93.4", "test_user", "hacker9900")
