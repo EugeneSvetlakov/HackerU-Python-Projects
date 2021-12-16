@@ -17,8 +17,8 @@ import re
 from ftplib import FTP, all_errors
 import timeit
 
-# https://www.thepythoncode.com/article/brute-force-attack-ftp-servers-using-ftplib-in-python
-
+# [brute ftp](https://www.thepythoncode.com/article/brute-force-attack-ftp-servers-using-ftplib-in-python)
+# [timeit](https://gist.github.com/rednafi/3334a9cce2d7f24226f6fe1231b5ac5f)
 
 def try_ftp(psw: str):
     host = "45.143.93.4"
@@ -69,12 +69,12 @@ print(f"Elapsed time: {elapsed_time}")
 # work_ftp("45.143.93.4", "test_user", "hacker9900")
 
 # Search flag in file
-regexp_str = r'fl[А-Яа-я]g=[0-9]{1,}'
-flag = ''
-with open('./xdz.crash.log', 'r') as file:
-    for i, line in enumerate(file):
-        search_result = re.search(regexp_str, line)
-        if search_result is not None:
-            flag = search_result.group(0)
-    print(flag)
+# regexp_str = r'fl[А-Яа-я]g=[0-9]{1,}'
+# flag = ''
+# with open('./xdz.crash.log', 'r') as file:
+#     for i, line in enumerate(file):
+#         search_result = re.search(regexp_str, line)
+#         if search_result is not None:
+#             flag = search_result.group(0)
+#     print(flag)
 # flаg=314159
