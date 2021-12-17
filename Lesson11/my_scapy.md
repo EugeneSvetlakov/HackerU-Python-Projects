@@ -91,14 +91,16 @@ p.haslayer(ICMP)
 p.getlayer(ARP)
 p.getlayer("IP")
 #### send packet
+##### L3 layer
 send(p) # simple send packer
 > В терминале запустить 'sudo tcpdump -nn -vv -i any port not 22'
-#### sr1() - send packets at layer 3 and return only first answer
+###### sr1() - send packets at layer 3 and return only first answer
 ans = sr1(p, timeout=2)
 ans
 ans.show()
 sr1(IP(dst="192.168.1.1")/UDP()/DNS(rd=1,qd=DNSQR(qname="www.yandex.ru")))
-#### sr() - Send and receive packets at layer 3
+
+###### sr() - Send and receive packets at layer 3
 > They return a couple of two lists. The first element is a list of couples (packet sent, answer), and the second element is the list of unanswered packets.
 > If there is a limited rate of answers, you can specify a time interval (in seconds) to wait between two packets with the inter parameter.
 > If some packets are lost or if specifying an interval is not enough, you can resend all the unanswered packets, either by calling the function again, directly with the unanswered list, or by specifying a retry parameter.
@@ -129,6 +131,25 @@ list(unans)
 list(ans.filter(lambda s,r:r[TCP].flags=="SA"))
 list(unans.filter(lambda s:s[TCP].dport==22))
 ans.make_table(lambda s,r:(r[IP].dst, r[TCP].sport, "X"))
+
+##### L2 layer
+###### sendp()
+> отправляет пакеты, используя канальный (L2) уровень,
+> учитываются указанные параметры и заголовки Ethernet кадров.
+> Ответы всё так же не ожидаются и не обрабатываются;
+p = Ether()/ARP(pdst="192.168.5.0/24")
+sendp(p)
+###### srp1()
+> аналогично sr1(), только уже канальный уровень.
+
+###### srp()
+> отправляет и принимает пакеты, уровень L2
+packet = Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst = "192.168.1.0/24")
+ans, unans = srp(packet, timeout = 2, iface = "eth0", inter = 0.1)
+> timeout – укажет, сколько времени (в секундах) нужно ждать до получения ответного пакета, retry – сколько раз нужно повторно слать пакет, если ответ не был получен и одна из самых полезных опций – это filter, синтаксис которого очень похож на tcpdump.
+packet = IP(dst="192.168.1.1")/TCP(dport=[23, 80],flags="S")
+ans, unans = srp(packet, timeout = 2, filter="host 192.168.1.242 and port 23", iface = "eth0", inter = 0.1)
+ans, unans = sr(packet, timeout = 2, filter="host 192.168.1.242 and port 23", iface = "eth0", inter = 0.1)
 ### SYN Scans
 sr1(IP(dst="192.168.1.1")/TCP(dport=80,flags="S"), timeout=2)
 > Use either notations to scan ports 400 through 443 on the system::
