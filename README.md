@@ -29,3 +29,9 @@ git config user.name "EugeneSvetlakov"
 git config user.email eugene.svetlakov@gmail.com
 ```
 > now try to push, and on ask to login - go auth process
+
+> Авторизация по токену (token)
+> [Creating a personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+```
+git remote set-url origin https://[APPLICATION]:[NEW TOKEN]@github.com/[ORGANISATION]/[REPO].git
+```
