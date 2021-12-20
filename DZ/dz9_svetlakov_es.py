@@ -7,7 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.relative_locator import locate_with
 
-# ДЗ № 7 Светлаков Е.С.
+# ДЗ № 9 Светлаков Е.С.
 # Зайти на лмску и отметиться что был на уроке автоматически
 
 
