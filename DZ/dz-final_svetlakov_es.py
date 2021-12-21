@@ -1,18 +1,170 @@
 # Итоговое задание
-# Напишите програму, сканирующую локальную сеть в поисках других устройств
-# и затем аткающую эти устройства перебором пар паролей (brute force) 
-# при известном логине по ssh (считать, что есть словарь содержащий правильный пароль)
+# Напишите програму, сканирующую локальную сеть в поисках
+# других устройств
+# и затем аткающую эти устройства перебором пар паролей
+# (brute force) при известном логине по ssh
+# (считать, что есть словарь содержащий правильный пароль)
 # Пример:
-# в локальной сети находятся еще два компьютера с ip 192.168.8.1 и  192.168.8.2
+# в локальной сети находятся еще два компьютера с ip 192.168.8.1 и 192.168.8.2
 # программа находит их и осуществляет brute force атаку на оба компьютера.
-# Файл с паролями для атаки назовите pass.txt, он должен находиться в директории с программой.
-# При удачном подборе пароля программа должна выводить соответствующее уведомление
-# и останавливать взлом для данного компьютера (и продолжать атаку на другие).
+# Файл с паролями для атаки назовите pass.txt, он должен находиться
+# в директории с программой.
+# При удачном подборе пароля программа должна выводить соответствующее
+# уведомление и останавливать взлом для данного компьютера
+# (и продолжать атаку на другие).
 # Оформите взаимодействие с программой как  с утилитой командной строки,
 # например так: ./brute_ssh.py -d pass.txt -l vasya_pupkin,
 # где pass.txt - файл паролей, vasya_pupkin - логин атакуемого пользователя
-# ЗЫ: использовать в скрипте готовые утилиты нельзя (nmap, netcat, netdiscover и т.п.)
+# ЗЫ: использовать в скрипте готовые утилиты нельзя
+# (nmap, netcat, netdiscover и т.п.)
 # задания со звездочокой:
 # * сделайте также перебор по файлу с логинами
 # ** добавьте возможность брутить ftp
 # *** подумайте о многопоточности
+
+import argparse
+import re
+# import scapy.all as scapy
+# from scapy.all import sr
+from scapy.layers.inet import IP, TCP, sr
+
+
+def check_ip(ip: str):
+    # TODO: проверку не только IP, но и диаппазона и сети
+    # Примеры:
+    # - Правилньо 192.168.1.1 or 192.168.1.5-15 or 192.168.1.0/24
+    # - Не правильно: 352.2.2.2 or 192.168.1.55-40 or 192.168.1.0/35
+    # regexp_ip = r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$"
+    match_str = r"^((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))(([/-])(\d{1,3})){,1}$"
+    # if groups number = 8 - range or netw
+    # if groups number = 5 - ip address
+    # group(0) - ip
+    # group(1) - 1's part of ip
+    # group(2) - 2's part of ip
+    # group(3) - 3's part of ip
+    # group(4) - 4's part of ip
+    # group(6) - spliter simbol
+    # group(7) - number after spliter
+
+    spliter_simbol = None
+    num_after = ""
+
+    ip_match = re.match(match_str, ip)
+    group_s = ip_match.groups() if ip_match else tuple()
+    groups_len = len(group_s)
+    if groups_len == 0:
+        return False
+    num_before = group_s[4]
+    ip = group_s[0]
+    spliter_simbol = group_s[6]
+    num_after = group_s[7]
+    check_ip_digits = all(
+        map(lambda n: 0 <= int(n) <= 255, ip_match.groups()[1:4])
+    )
+    if spliter_simbol is None:
+        return check_ip_digits
+    elif spliter_simbol == "-":
+        return all(
+            [
+                check_ip_digits,
+                0 <= int(num_before) <= 255,
+                0 <= int(num_after) <= 255,
+                num_before <= num_after
+            ]
+        )
+    else:
+        return all(
+            [
+                check_ip_digits,
+                0 <= int(num_before) <= 255,
+                1 <= int(num_after) <= 32
+            ]
+        )
+
+
+def check_port_int(port: int):
+    return bool(1 < port < 65353)
+
+
+def check_port_tuple(port):
+    return bool(
+        port[0] <= port[1]
+        and check_port_int(port[0])
+        and check_port_int(port[1])
+    )
+
+
+def check_port(port):
+    if type(port) is int:
+        return check_port_int(port)
+    if type(port) is tuple:
+        return check_port_tuple(port)
+    return False
+
+
+def filter_ports(ports: str):
+    regexp_port = r"(^[1-9]{1}\d{,5}$|^[1-9]{1}\d{,5}-[1-9]{1}\d{,5}$)"
+    filtered_ports_str = filter(
+        lambda p: re.findall(regexp_port, p), ports.split(',')
+    )
+    pre_list = map(
+        lambda p: (
+            int(p.split('-')[0]),
+            int(p.split('-')[1])
+            ) if "-" in p else int(p),
+        filtered_ports_str
+    )
+    return list(
+        filter(
+            lambda p: check_port(p),
+            pre_list
+        )
+    )
+
+
+def args():
+    parser = argparse.ArgumentParser(__doc__)
+    parser.description = (
+        "Программа поиска открытых портов."
+        )
+    parser.add_argument(
+        "host",
+        default="192.168.1.1",
+        help=(
+            "host(s) to scan: 192.168.1.1 or 192.168.1.5-15 or 192.168.1.0/24")
+        )
+    parser.add_argument(
+        "port",
+        default="22",
+        help="port(s) to scan: 22 or 22,23 or 22-25")
+    return parser.parse_args()
+
+
+def scan_ip_port(ip, port):
+    ans, unans = sr(
+        IP(dst=ip)/TCP(dport=port, flags="S"),
+        inter=1, retry=2, timeout=1)
+    return ans.nsummary(
+        lfilter=lambda s, r: (r.haslayer(TCP) and (r.getlayer(TCP).flags & 2)))
+
+
+if __name__ == '__main__':
+    options = args()
+    if options.host and options.port:
+        print(f"Entered host= {options.host}")
+        print(f"Entered port= {options.port}")
+        is_right_ip = check_ip(options.host)
+        ports = filter_ports(options.port)
+        is_right_port = bool(len(ports) > 0)
+        print("Checking entered params:")
+        print(f"Host is: {is_right_ip}")
+        print(f"Port is: {is_right_port}")
+        print("Scaning started:")
+        if is_right_ip and is_right_port:
+            print(f"Ip to scan: {options.host}")
+            print(f"Ports to scan: {ports}")
+            open_ports = scan_ip_port(options.host, ports)
+            print(open_ports)
+        else:
+            print("Wrong params entered.")
+        print("Scaning finished.")

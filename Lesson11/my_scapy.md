@@ -14,6 +14,10 @@ pip install --pre scapy[basic]
 pip install --pre scapy[complite]
 ### Platform-specific instructions
 sudo apt-get install tcpdump
+
+## scapy in python:
+import scapy.all as scapy
+
 ## discover the Scapy layers and protocols
 explore()
 ## Type help() for interactive help, or help(object) for help about object.
