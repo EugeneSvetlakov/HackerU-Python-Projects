@@ -22,6 +22,7 @@
 # ** добавьте возможность брутить ftp
 # *** подумайте о многопоточности
 
+from __future__ import annotations
 import argparse
 import re
 # import scapy.all as scapy
@@ -29,7 +30,7 @@ import re
 from scapy.layers.inet import IP, TCP, sr
 
 
-def check_ip(ip: str):
+def check_ip(ip: str) -> bool:
     # TODO: проверку не только IP, но и диаппазона и сети
     # Примеры:
     # - Правилньо 192.168.1.1 or 192.168.1.5-15 or 192.168.1.0/24
@@ -82,11 +83,11 @@ def check_ip(ip: str):
         )
 
 
-def check_port_int(port: int):
+def check_port_int(port: int) -> bool:
     return bool(1 < port < 65353)
 
 
-def check_port_tuple(port):
+def check_port_tuple(port) -> bool:
     return bool(
         port[0] <= port[1]
         and check_port_int(port[0])
@@ -94,7 +95,7 @@ def check_port_tuple(port):
     )
 
 
-def check_port(port):
+def check_port(port) -> bool:
     if type(port) is int:
         return check_port_int(port)
     if type(port) is tuple:
@@ -102,7 +103,7 @@ def check_port(port):
     return False
 
 
-def filter_ports(ports: str):
+def filter_ports(ports: str) -> list[int | tuple[int, int]]:
     regexp_port = r"(^[1-9]{1}\d{,5}$|^[1-9]{1}\d{,5}-[1-9]{1}\d{,5}$)"
     filtered_ports_str = filter(
         lambda p: re.findall(regexp_port, p), ports.split(',')
@@ -143,9 +144,13 @@ def args():
 def scan_ip_port(ip, port):
     ans, unans = sr(
         IP(dst=ip)/TCP(dport=port, flags="S"),
-        inter=1, retry=2, timeout=1)
-    return ans.nsummary(
-        lfilter=lambda s, r: (r.haslayer(TCP) and (r.getlayer(TCP).flags & 2)))
+        inter=0.01, retry=1, timeout=0.5)
+    # return ans.summary(
+    #     lfilter=lambda s, r: (r.haslayer(TCP) and (r.getlayer(TCP).flags & 2)),
+    #     prn=lambda s, r: (s[IP].dst, s[TCP].dport)
+    # )
+    return [(s[IP].dst, s[TCP].dport) for s, r in ans.filter(lambda s, r: (r.haslayer(TCP) and r.getlayer(TCP).flags=="SA"))]
+    
 
 
 if __name__ == '__main__':

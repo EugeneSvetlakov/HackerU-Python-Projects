@@ -46,9 +46,7 @@ p_ip.ttl
 p_ip.show()
 ls(p_ip)
 ### ip range
-ip_range = IP(dst="192.168.1.240-248")
-[p for p in ip_range]
-ip_range = IP(dst=["192.168.1.1", "192.168.10.2"], ttl=(1, 9))
+ip_range = IP(dst=["192.168.1.1", "192.168.10.0/28"], ttl=(1, 9))
 [p for p in ip_range]
 ip_range = IP(dst=["192.168.1.1", "192.168.10.2"], ttl=[1, 2, (5, 9)])
 [p for p in ip_range]
@@ -110,7 +108,11 @@ sr1(IP(dst="192.168.1.1")/UDP()/DNS(rd=1,qd=DNSQR(qname="www.yandex.ru")))
 > If some packets are lost or if specifying an interval is not enough, you can resend all the unanswered packets, either by calling the function again, directly with the unanswered list, or by specifying a retry parameter.
 > If retry is 3, Scapy will try to resend unanswered packets 3 times. If retry is -3, Scapy will resend unanswered packets until no more answer is given for the same set of unanswered packets 3 times in a row. The timeout parameter specify the time to wait after the last packet has been sent:
 sr(IP(dst="192.168.1.1")/TCP(dport=[21,22,23]))
-sr(IP(dst="192.168.1.1-2")/TCP(dport=[21,22,245]), timeout=1)
+range_ip = [p for p in IP(dst=["192.168.1.1", "192.168.2.0/28"])]
+range_port = [p for p in TCP(dport=[22,80,(440,443)])]
+ip = IP(dst=["192.168.1.1", "192.168.2.0/28"])
+port = TCP(dport=[22,80,(440,443)])
+range_packer = [p for p in ip/port]
 sr(IP(dst="192.168.1.1")/TCP(dport=[21,22,23]), inter=0.5, retry=)
 ans, unans = sr(IP(dst="192.168.1.1-2")/TCP(dport=[21,22,245]), inter=0.5, retry=2, timeout=1)
 > resend unanswered packets:
@@ -131,8 +133,9 @@ ans.summary(lambda s,r: s.sprintf("%TCP.sport% \t %IP.dst%")+r.sprintf("\t %TCP.
 print(*filter(lambda t: t[1][TCP].flags=="RA", ans), sep="\n")
 print(*filter(lambda t: t[0][TCP].flags=="S", ans), sep="\n")
 ans.summary(lfilter=lambda s,r:r[TCP].flags=="RA")
+ans.summary(lfilter=lambda s,r:r[TCP].flags=="RA", prn=lambda s,r: (s[IP].dst), s[TCP].dport))
 list(unans)
-list(ans.filter(lambda s,r:r[TCP].flags=="SA"))
+list(ans.filter(lambda s,r:r[TCP].flags=="SA").show(lambda s,r: (s[IP].dst, s[TCP].dport)))
 list(unans.filter(lambda s:s[TCP].dport==22))
 ans.make_table(lambda s,r:(r[IP].dst, r[TCP].sport, "X"))
 
