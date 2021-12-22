@@ -9,6 +9,7 @@
 - Visual Studio IntelliCode
 
 ## Linter
+### flake8
 [inting Python in Visual Studio Code](https://code.visualstudio.com/docs/python/linting)
 ```
 python3.8 -m pip install -U flake8
@@ -67,6 +68,33 @@ Python: Select Linter -> flake8
                 "RedirectOutput"
             ]
         }
+    ]
+}
+```
+---- end ----
+
+### pylint
+install vscode addon Pylance
+> ./.vscode/launch.json такой же как у flake8
+---- ./.vscode/settings.json ----
+```
+{
+    "python.languageServer": "Pylance",
+    "python.analysis.typeCheckingMode":"strict",
+    "python.analysis.diagnosticMode":"openFilesOnly",
+    "python.envFile": "${workspaceRoot}/.env",
+    "python.pythonPath": ".env/bin/python",
+    "python.linting.enabled": true,
+    "python.linting.lintOnSave": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.flake8Enabled": false,
+    "python.linting.flake8Path": "flake8",
+    "python.linting.mypyEnabled": false,
+    "python.formatting.autopep8Args": ["--max-line-length", "91", "--experimental"],
+    "python.linting.ignorePatterns": [
+        "**/site-packages/**/*.py",
+        ".vscode/*.py",
+        ".venv/*/*.py"
     ]
 }
 ```

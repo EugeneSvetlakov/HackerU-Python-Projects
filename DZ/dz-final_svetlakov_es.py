@@ -56,12 +56,12 @@ def check_ip(ip: str) -> bool:
     groups_len = len(group_s)
     if groups_len == 0:
         return False
-    num_before = group_s[4]
-    ip = group_s[0]
+    num_before = str(group_s[4])
+    ip = str(group_s[0])
     spliter_simbol = group_s[6]
-    num_after = group_s[7]
+    num_after = str(group_s[7])
     check_ip_digits = all(
-        map(lambda n: 0 <= int(n) <= 255, ip_match.groups()[1:4])
+        map(lambda n: 0 <= int(n) <= 255, group_s[1:4])
     )
     if spliter_simbol is None:
         return check_ip_digits
