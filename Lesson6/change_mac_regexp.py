@@ -4,6 +4,8 @@ import argparse
 import re
 import random
 
+# Links:
+# [regex online](https://regex101.com/)
 
 # mac = "02:a2:f0:bb:10:a2"
 

@@ -37,8 +37,8 @@ def check_ip(ip: str) -> bool:
     # - Не правильно: 352.2.2.2 or 192.168.1.55-40 or 192.168.1.0/35
     # regexp_ip = r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$"
     match_str = r"^((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))(([/-])(\d{1,3})){,1}$"
-    # if groups number = 8 - range or netw
-    # if groups number = 5 - ip address
+    # if groups = 8 - range of ip or network
+    # if groups = 5 - single ip address
     # group(0) - ip
     # group(1) - 1's part of ip
     # group(2) - 2's part of ip
@@ -47,6 +47,7 @@ def check_ip(ip: str) -> bool:
     # group(6) - spliter simbol
     # group(7) - number after spliter
 
+    ip = ip.strip()
     spliter_simbol = None
     num_after = ""
 
@@ -81,6 +82,42 @@ def check_ip(ip: str) -> bool:
                 1 <= int(num_after) <= 32
             ]
         )
+
+
+def get_ip_list(ip: str) -> list[str]:
+    ip = map(str.strip, ip.split(','))
+    filtered_ip = filter(lambda p: check_ip(p), ip)
+    regexp__ip_net = r"^((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))(([/])(\d{1,3})){,1}$"
+    res = []
+    for p in filtered_ip:
+        if re.match(regexp__ip_net, p):
+            res.append(p)
+        else:
+            res.extend(range_ip_to_list(p))
+    return res
+
+
+def range_ip_to_list(ip: str) -> list[str]:
+    ip = ip.strip()
+    match_str = r"^((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))(([-])(\d{1,3})){,1}$"
+    ip_match = re.match(match_str, ip)
+    group_s = ip_match.groups() if ip_match else tuple()
+    if len(group_s) == 0:
+        return list()
+    # if groups = 8 - range of ip or network
+    # if groups = 5 - single ip address
+    # group(0) - ip
+    # group(1) - 1's part of ip
+    # group(2) - 2's part of ip
+    # group(3) - 3's part of ip
+    # group(4) - 4's part of ip
+    # group(6) - spliter simbol
+    # group(7) - number after spliter
+    ip_mask = f"{group_s[1]}.{group_s[2]}.{group_s[3]}"
+    ip_list = []
+    for sub_ip in range(int(group_s[4]), int(group_s[7]) + 1):
+        ip_list.append(f"{ip_mask}.{str(sub_ip)}")
+    return ip_list
 
 
 def check_port_int(port: int) -> bool:
@@ -145,12 +182,13 @@ def scan_ip_port(ip, port):
     ans, unans = sr(
         IP(dst=ip)/TCP(dport=port, flags="S"),
         inter=0.01, retry=1, timeout=0.5)
-    # return ans.summary(
-    #     lfilter=lambda s, r: (r.haslayer(TCP) and (r.getlayer(TCP).flags & 2)),
-    #     prn=lambda s, r: (s[IP].dst, s[TCP].dport)
-    # )
-    return [(s[IP].dst, s[TCP].dport) for s, r in ans.filter(lambda s, r: (r.haslayer(TCP) and r.getlayer(TCP).flags=="SA"))]
-    
+    return [
+        (s[IP].dst, s[TCP].dport) for s, r in ans.filter(
+            lambda s, r: (
+                r.haslayer(TCP) and r.getlayer(TCP).flags == "SA"
+            )
+        )
+    ]
 
 
 if __name__ == '__main__':
@@ -158,18 +196,18 @@ if __name__ == '__main__':
     if options.host and options.port:
         print(f"Entered host= {options.host}")
         print(f"Entered port= {options.port}")
-        is_right_ip = check_ip(options.host)
+        ip_list = get_ip_list(options.host)
+        is_ip_exist = bool(len(ip_list) > 0)
         ports = filter_ports(options.port)
-        is_right_port = bool(len(ports) > 0)
-        print("Checking entered params:")
-        print(f"Host is: {is_right_ip}")
-        print(f"Port is: {is_right_port}")
+        is_port_exist = bool(len(ports) > 0)
+
         print("Scaning started:")
-        if is_right_ip and is_right_port:
-            print(f"Ip to scan: {options.host}")
+        if is_ip_exist and is_port_exist:
+            print(f"Ip to scan: {ip_list}")
             print(f"Ports to scan: {ports}")
-            open_ports = scan_ip_port(options.host, ports)
+            open_ports = scan_ip_port(ip_list, ports)
             print(open_ports)
         else:
             print("Wrong params entered.")
+
         print("Scaning finished.")

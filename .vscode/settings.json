@@ -1,11 +1,14 @@
 {
     "python.languageServer": "Pylance",
+    "python.envFile": "${workspaceRoot}/.env",
+    "python.pythonPath": ".env/bin/python",
     "python.linting.enabled": true,
     "python.linting.lintOnSave": true,
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.flake8Path": "flake8",
-    "python.formatting.autopep8Args": ["--max-line-length", "79", "--experimental"],
+    "python.linting.mypyEnabled": true,
+    "python.formatting.autopep8Args": ["--max-line-length", "91", "--experimental"],
     "python.linting.ignorePatterns": [
         "**/site-packages/**/*.py",
         ".vscode/*.py",

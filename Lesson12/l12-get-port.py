@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import re
+
 # from re import RegexFlag, split
 
 
@@ -31,7 +34,7 @@ def filter_ports(ports: str):
         lambda p: (
             int(p.split('-')[0]),
             int(p.split('-')[1])
-            ) if "-" in p else int(p),
+        ) if "-" in p else int(p),
         filtered_ports_str
     )
     return list(
@@ -47,7 +50,6 @@ def check_ip(ip: str):
     # Примеры:
     # - Правилньо 192.168.1.1 or 192.168.1.5-15 or 192.168.1.0/24
     # - Не правильно: 352.2.2.2 or 192.168.1.55-40 or 192.168.1.0/35
-    # regexp_ip = r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$"
     match_str = r"^((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))(([/-])(\d{1,3})){,1}$"
     # if groups number = 8 - range or netw
     # if groups number = 5 - ip address
@@ -58,7 +60,7 @@ def check_ip(ip: str):
     # group(4) - 4's part of ip
     # group(6) - spliter simbol
     # group(7) - number after spliter
-
+    ip = ip.strip()
     spliter_simbol = None
     num_after = ""
 
@@ -95,34 +97,57 @@ def check_ip(ip: str):
         )
 
 
-regexp_ip = r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$"
-match_str = r"^((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))(([/-])(\d{1,3})){,1}$"
-# if groups number = 8 - range or netw
-# if groups number = 5 - ip address
-# group(0) - ip
-# group(1) - 1's part of ip
-# group(2) - 2's part of ip
-# group(3) - 3's part of ip
-# group(4) - 4's part of ip
-# group(6) - spliter simbol
-# group(7) - number after spliter
-
-ip = "192.168.1.21"
-print(check_ip(ip))
+def get_ip_list(ip: str) -> list[str]:
+    ip = map(str.strip, ip.split(','))
+    filtered_ip = filter(lambda p: check_ip(p), ip)
+    regexp__ip_net = r"^((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))(([/])(\d{1,3})){,1}$"
+    res = []
+    for p in filtered_ip:
+        if re.match(regexp__ip_net, p):
+            res.append(p)
+        else:
+            res.extend(range_ip_to_list(p))
+    return res
 
 
+def range_ip_to_list(ip: str) -> list[str]:
+    ip = ip.strip()
+    match_str = r"^((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))(([-])(\d{1,3})){,1}$"
+    ip_match = re.match(match_str, ip)
+    group_s = ip_match.groups() if ip_match else tuple()
+    if len(group_s) == 0:
+        return list()
+    # if groups = 8 - range of ip or network
+    # if groups = 5 - single ip address
+    # group(0) - ip
+    # group(1) - 1's part of ip
+    # group(2) - 2's part of ip
+    # group(3) - 3's part of ip
+    # group(4) - 4's part of ip
+    # group(6) - spliter simbol
+    # group(7) - number after spliter
+    ip_mask = f"{group_s[1]}.{group_s[2]}.{group_s[3]}"
+    ip_list = []
+    for sub_ip in range(int(group_s[4]), int(group_s[7]) + 1):
+        ip_list.append(f"{ip_mask}.{str(sub_ip)}")
+    return ip_list
 
-ports = [
-    "22,24,80-88,54,96-102-55,04-55,25-20",
-    "22",
-    "22-25",
-    "80,8080",
-    "f55",
-    "55;5",
-    "55-57-59",
-    "25,55-78-96"
+
+if __name__ == '__main__':
+    ip = "192.168.1.21, 192.168.1.15-19, 192.168.6.4- 8, 192.168.5/28 , 192.168.5.0/27"
+    ip_list = get_ip_list(ip)
+
+    ports = [
+        "22,24,80-88,54,96-102-55,04-55,25-20",
+        "22",
+        "22-25",
+        "80,8080",
+        "f55",
+        "55;5",
+        "55-57-59",
+        "25,55-78-96"
     ]
 
-for p in ports:
-    f_list = filter_ports(p)
-    print(f_list)
+    for p in ports:
+        f_list = filter_ports(p)
+        print(f_list)
