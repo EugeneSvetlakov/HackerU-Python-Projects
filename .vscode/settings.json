@@ -3,7 +3,7 @@
     "python.analysis.typeCheckingMode":"strict",
     "python.analysis.diagnosticMode":"openFilesOnly",
     "python.envFile": "${workspaceRoot}/.env",
-    "python.pythonPath": ".env/bin/python",
+    "python.defaultInterpreterPath": ".env/bin/python",
     "python.linting.enabled": true,
     "python.linting.lintOnSave": true,
     "python.linting.pylintEnabled": true,

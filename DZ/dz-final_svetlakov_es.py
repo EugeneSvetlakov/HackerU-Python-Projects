@@ -21,10 +21,15 @@
 # * сделайте также перебор по файлу с логинами
 # ** добавьте возможность брутить ftp
 # *** подумайте о многопоточности
+# ![ssh lib - ParallelSSH](https://github.com/ParallelSSH/parallel-ssh)
+# [ParallelSSH Docs](https://parallel-ssh.readthedocs.io/en/latest/quickstart.html)
+# [ssh lib - paramiko](https://github.com/paramiko/paramiko)
+# [paramiko Docs](https://docs.paramiko.org/en/stable/api/client.html)
 
 from __future__ import annotations
 import argparse
 import re
+from typing import Tuple
 # import scapy.all as scapy
 # from scapy.all import sr
 from scapy.layers.inet import IP, TCP, sr
@@ -85,10 +90,10 @@ def check_ip(ip: str) -> bool:
 
 
 def get_ip_list(ip: str) -> list[str]:
-    ip = map(str.strip, ip.split(','))
-    filtered_ip = filter(lambda p: check_ip(p), ip)
+    list_ip = map(str.strip, ip.split(','))
+    filtered_ip = filter(lambda p: check_ip(p), list_ip)
     regexp__ip_net = r"^((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))(([/])(\d{1,3})){,1}$"
-    res = []
+    res: list[str] = []
     for p in filtered_ip:
         if re.match(regexp__ip_net, p):
             res.append(p)
@@ -113,18 +118,18 @@ def range_ip_to_list(ip: str) -> list[str]:
     # group(4) - 4's part of ip
     # group(6) - spliter simbol
     # group(7) - number after spliter
-    ip_mask = f"{group_s[1]}.{group_s[2]}.{group_s[3]}"
-    ip_list = []
+    ip_mask: str = f"{group_s[1]}.{group_s[2]}.{group_s[3]}"
+    ips_list: list[str] = list()
     for sub_ip in range(int(group_s[4]), int(group_s[7]) + 1):
-        ip_list.append(f"{ip_mask}.{str(sub_ip)}")
-    return ip_list
+        ips_list.append(f"{ip_mask}.{str(sub_ip)}")
+    return ips_list
 
 
 def check_port_int(port: int) -> bool:
     return bool(1 < port < 65353)
 
 
-def check_port_tuple(port) -> bool:
+def check_port_tuple(port: Tuple[int, int]) -> bool:
     return bool(
         port[0] <= port[1]
         and check_port_int(port[0])
@@ -132,8 +137,8 @@ def check_port_tuple(port) -> bool:
     )
 
 
-def check_port(port) -> bool:
-    if type(port) is int:
+def check_port(port: int | tuple[int, int]) -> bool:
+    if isinstance(port, int):
         return check_port_int(port)
     if type(port) is tuple:
         return check_port_tuple(port)
@@ -154,7 +159,7 @@ def filter_ports(ports: str) -> list[int | tuple[int, int]]:
     )
     return list(
         filter(
-            lambda p: check_port(p),
+            check_port,
             pre_list
         )
     )
@@ -178,7 +183,7 @@ def args():
     return parser.parse_args()
 
 
-def scan_ip_port(ip, port):
+def scan_ip_port(ip: list[str], port: list[int | tuple[int, int]]) -> list[tuple[str, str]]:
     ans, unans = sr(
         IP(dst=ip)/TCP(dport=port, flags="S"),
         inter=0.01, retry=1, timeout=0.5)
