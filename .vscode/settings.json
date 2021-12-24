@@ -2,8 +2,12 @@
     "python.languageServer": "Pylance",
     "python.analysis.typeCheckingMode":"strict",
     "python.analysis.diagnosticMode":"openFilesOnly",
+    "python.analysis.extraPaths":[
+        ".venv/lib/",
+        ".venv/lib64/"
+    ],
     "python.envFile": "${workspaceRoot}/.env",
-    "python.defaultInterpreterPath": ".env/bin/python",
+    "python.defaultInterpreterPath": "${env:VARIABLE}",
     "python.linting.enabled": true,
     "python.linting.lintOnSave": true,
     "python.linting.pylintEnabled": true,
