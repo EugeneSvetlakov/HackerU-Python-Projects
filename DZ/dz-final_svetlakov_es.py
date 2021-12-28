@@ -21,9 +21,6 @@
 # * сделайте также перебор по файлу с логинами
 # ** добавьте возможность брутить ftp
 # *** подумайте о многопоточности
-# ![ssh lib - ParallelSSH](https://github.com/ParallelSSH/parallel-ssh)
-# [ParallelSSH Docs](https://parallel-ssh.readthedocs.io/en/latest/quickstart.html)
-# [ssh lib - paramiko](https://github.com/paramiko/paramiko)
 # [paramiko Docs](https://docs.paramiko.org/en/stable/api/client.html)
 
 from __future__ import annotations
@@ -202,7 +199,7 @@ def args():
         help="login to using in brutforce operations")
     parser.add_argument(
         "dict_file",
-        default="dict.txt",
+        default="pass.txt",
         help="Password dictionary file")
     return parser.parse_args()
 
@@ -298,6 +295,7 @@ def brute_host(
             pwd = pwd.strip()
             if check_ssh(host=host, user=login, pwd=pwd)['result']:
                 finded_credential.append((host, login, pwd))
+                break
     return finded_credential
 
 
