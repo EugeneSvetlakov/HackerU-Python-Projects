@@ -110,8 +110,11 @@ git config user.email eugene.svetlakov@gmail.com
 ```
 > now try to push, and on ask to login - go auth process
 
-> Авторизация по токену (token)
+### Авторизация по токену (token)
 > [Creating a personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 ```
+cd [yuor project directory]
 git remote set-url origin https://[APPLICATION]:[NEW TOKEN]@github.com/[ORGANISATION]/[REPO].git
 ```
+### To see your origin or upstream:
+git remote -v
